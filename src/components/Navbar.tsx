@@ -1,19 +1,29 @@
 "use client";
 
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { useSession, signOut } from "next-auth/react";
+import { Button } from "@mui/material";
+import Link from "next/link";
+
 
 export default function Navbar() {
+  const { data: session } = useSession();
+
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography sx={{ flexGrow: 1 }}>
-          DevConnect
-        </Typography>
-        <Button color="inherit">Login</Button>
-      </Toolbar>
-    </AppBar>
+    <>
+      {session ? (
+        <>
+          <span>{session.user?.email}</span>
+          <Button onClick={() => signOut()}>
+            Logout
+          </Button>
+        </>
+      ) : (
+        <Link href="/login" passHref>
+  <Button color="inherit">
+    Login
+  </Button>
+</Link>  
+)}
+    </>
   );
 }
