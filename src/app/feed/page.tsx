@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import CreatePost from "@/components/CreatePost";
 import LikeButton from "@/components/LikeButton";
+import Link from "next/link";
+
 export default async function FeedPage() {
   const posts = await prisma.post.findMany({
     include: {
@@ -27,6 +29,10 @@ export default async function FeedPage() {
       ))}
 
       <CreatePost />
+
+      <Link href={`/profile/${user.id}`}>
+  View Profile
+</Link>
 
     </div>
   );
