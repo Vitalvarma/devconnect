@@ -31,40 +31,6 @@ export default async function ProfilePage({
           {user.bio}
         </p>
       )}
-
-      {user.location && (
-        <p className="mb-2">
-          📍 {user.location}
-        </p>
-      )}
-
-      {user.skills.length > 0 && (
-        <div className="mb-4">
-          <h2 className="font-semibold mb-2">
-            Skills
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {user.skills.map((skill, index) => (
-              <span
-                key={index}
-                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {user.github && (
-        <a
-          href={user.github}
-          target="_blank"
-          className="text-blue-600 underline"
-        >
-          GitHub Profile
-        </a>
-      )}
     </div>
   );
 }
