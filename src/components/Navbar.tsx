@@ -16,14 +16,19 @@ export default function Navbar() {
           <Button onClick={() => signOut()}>
             Logout
           </Button>
+          <Link href={`/profile/${session?.user?.email}`}>
+            View Profile
+          </Link>
         </>
       ) : (
-        <Link href="/login" passHref>
-  <Button color="inherit">
-    Login
-  </Button>
-</Link>  
-)}
+        <>
+          <Link href="/login" passHref>
+            <Button color="inherit">
+              Login
+            </Button>
+          </Link>
+        </>
+      )}
     </>
   );
 }
