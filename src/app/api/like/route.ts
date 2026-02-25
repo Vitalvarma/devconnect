@@ -1,25 +1,21 @@
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
-  if (!session) {
-    return new Response("Unauthorized", { status: 401 });
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   const { postId } = await req.json();
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user?.email! },
-  });
-
-  if (!user) return new Response("User not found", { status: 404 });
-
   const existingLike = await prisma.like.findUnique({
     where: {
       userId_postId: {
-        userId: user.id,
+        userId: session.user.id,
         postId,
       },
     },
@@ -27,17 +23,23 @@ export async function POST(req: Request) {
 
   if (existingLike) {
     await prisma.like.delete({
-      where: { id: existingLike.id },
+      where: {
+        userId_postId: {
+          userId: session.user.id,
+          postId,
+        },
+      },
     });
-    return Response.json({ liked: false });
+
+    return NextResponse.json({ message: "Unliked" });
   }
 
   await prisma.like.create({
     data: {
-      userId: user.id,
+      userId: session.user.id,
       postId,
     },
   });
 
-  return Response.json({ liked: true });
+  return NextResponse.json({ message: "Liked" });
 }

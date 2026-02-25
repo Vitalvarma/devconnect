@@ -2,27 +2,29 @@
 
 import { useState } from "react";
 
-export default function LikeButton({
-  postId,
-  initialCount,
-}: {
+interface Props {
   postId: string;
   initialCount: number;
-}) {
+}
+
+export default function LikeButton({ postId, initialCount }: Props) {
   const [count, setCount] = useState(initialCount);
 
   const handleLike = async () => {
-    const res = await fetch("/api/like", {
+    const res = await fetch("/api/posts/like", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ postId }),
     });
 
     const data = await res.json();
 
-    if (data.liked) {
-      setCount(count + 1);
+    if (data.message === "Liked") {
+      setCount((prev) => prev + 1);
     } else {
-      setCount(count - 1);
+      setCount((prev) => prev - 1);
     }
   };
 
