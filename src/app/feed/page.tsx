@@ -46,6 +46,22 @@ export default async function FeedPage() {
             postId={post.id}
             initialCount={post.likes.length}
           />
+
+          {post.authorId === session.user.id && (
+          <button
+            onClick={async () => {
+              await fetch("/api/posts/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ postId: post.id }),
+              });
+              location.reload();
+            }}
+            style={{ marginLeft: 10, color: "red" }}
+          >
+            Delete
+          </button>
+        )}
         </div>
       ))}
 
