@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-
+import FollowButton from "@/components/FollowButton";
 interface ProfilePageProps {
   params: {
     id: string;
@@ -25,7 +25,7 @@ export default async function ProfilePage({
       <h1 className="text-3xl font-bold mb-4">
         {user.name}
       </h1>
-
+      <FollowButton userId={user.id} />
       {user.bio && (
         <p className="mb-4 text-gray-700">
           {user.bio}
