@@ -4,11 +4,11 @@ import { useState } from "react";
 
 interface Props {
   userId: string;
+  initialState: boolean;
 }
 
-export default function FollowButton({ userId }: Props) {
-  const [isFollowing, setIsFollowing] = useState(false);
-
+export default function FollowButton({ userId, initialState }: Props) {
+const [isFollowing, setIsFollowing] = useState(initialState);
   const handleFollow = async () => {
     const res = await fetch("/api/users/follow", {
       method: "POST",
