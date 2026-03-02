@@ -4,6 +4,7 @@ import LikeButton from "@/components/LIkeButton";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import DeleteButton from "@/components/deleteButton";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
@@ -48,20 +49,8 @@ export default async function FeedPage() {
           />
 
           {post.authorId === session.user.id && (
-          <button
-            onClick={async () => {
-              await fetch("/api/posts/delete", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ postId: post.id }),
-              });
-              location.reload();
-            }}
-            style={{ marginLeft: 10, color: "red" }}
-          >
-            Delete
-          </button>
-        )}
+            <DeleteButton postId={post.id} />
+          )}
         </div>
       ))}
 
