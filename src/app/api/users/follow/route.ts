@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const existingFollow = await prisma.following.findUnique({
+  const existingFollow = await prisma.follow.findUnique({
     where: {
       followerId_followingId: {
         followerId: session.user.id,
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   });
 
   if (existingFollow) {
-    await prisma.following.delete({
+    await prisma.follow.delete({
       where: {
         followerId_followingId: {
           followerId: session.user.id,
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Unfollowed" });
   }
 
-  await prisma.following.create({
+  await prisma.follow.create({
     data: {
       followerId: session.user.id,
       followingId: userId,
@@ -50,3 +50,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ message: "Followed" });
 }
+

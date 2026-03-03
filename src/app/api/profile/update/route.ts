@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
   try {
@@ -15,11 +15,10 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { bio, skills, location, github } = body as {
+    const { bio, name, image } = body as {
       bio?: string;
-      skills?: string;
-      location?: string;
-      github?: string;
+      name?: string;
+      image?: string;
     };
 
     const updatedUser = await prisma.user.update({
@@ -28,23 +27,27 @@ export async function POST(req: Request) {
       },
       data: {
         bio: bio || "",
-        skills: skills
-          ? skills.split(",").map((s) => s.trim())
-          : [],
-        location: location || "",
-        github: github || "",
+        name: name || undefined,
+        image: image || undefined,
       },
     });
 
     return NextResponse.json({
       message: "Profile updated successfully",
-      user: updatedUser,
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        bio: updatedUser.bio,
+        image: updatedUser.image,
+      },
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }
     );
   }
 }
+

@@ -17,39 +17,60 @@ import {
 import {
   Email as EmailIcon,
   Lock as LockIcon,
+  Person as PersonIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
-  Login as LoginIcon,
+  HowToReg as SignupIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
+    if (!email || !password || !name) {
+      setError("Please fill in all fields");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      await signIn("credentials", {
-        email,
-        password,
-        redirect: true,
-        callbackUrl: "/feed",
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, name }),
       });
+
+      if (res.ok) {
+        await signIn("credentials", {
+          email,
+          password,
+          redirect: true,
+          callbackUrl: "/feed",
+        });
+      } else {
+        const data = await res.json();
+        setError(data.message || "Signup failed");
+        setLoading(false);
+      }
     } catch {
-      setError("Invalid email or password");
+      setError("An error occurred. Please try again.");
       setLoading(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleLogin();
+    handleSignup();
   };
 
   return (
@@ -65,10 +86,10 @@ export default function LoginPage() {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: "center", mb: 4 }}>
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-              Welcome Back
+              Create Account
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Sign in to continue to DevConnect
+              Join DevConnect today
             </Typography>
           </Box>
 
@@ -79,6 +100,23 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Name"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              variant="outlined"
+              sx={{ mb: 2 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
             <TextField
               fullWidth
               label="Email"
@@ -99,7 +137,7 @@ export default function LoginPage() {
             <TextField
               fullWidth
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -129,20 +167,20 @@ export default function LoginPage() {
               fullWidth
               variant="contained"
               size="large"
-              endIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
-              disabled={loading || !email || !password}
+              endIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SignupIcon />}
+              disabled={loading || !email || !password || !name}
               sx={{ py: 1.5 }}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
 
           <Box sx={{ textAlign: "center", mt: 3 }}>
             <Typography variant="body2" color="text.secondary">
-              Don&apos;t have an account?{" "}
+              Already have an account?{" "}
               <Typography
                 component={Link}
-                href="/signup"
+                href="/login"
                 variant="body2"
                 sx={{
                   color: "primary.main",
@@ -153,7 +191,7 @@ export default function LoginPage() {
                   },
                 }}
               >
-                Sign Up
+                Sign In
               </Typography>
             </Typography>
           </Box>

@@ -1,5 +1,11 @@
 import "./globals.css";
-import Link from "next/link";
+import AuthSessionProvider from "@/components/SessionProvider";
+import Navbar from "@/components/Navbar";
+import CustomThemeProvider from "@/components/ThemeProvider";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -8,28 +14,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: "sans-serif", margin: 0 }}>
-        <nav
-          style={{
-            padding: 16,
-            borderBottom: "1px solid #ddd",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Link href="/">DevConnect</Link>
-
-          <div style={{ display: "flex", gap: 20 }}>
-            <Link href="/feed">Feed</Link>
-            <Link href="/search">Search</Link>
-            <Link href="/create-post">Post</Link>
-          </div>
-        </nav>
-
-        <main style={{ maxWidth: 800, margin: "40px auto" }}>
-          {children}
-        </main>
+      <body className={inter.className}>
+        <AppRouterCacheProvider>
+          <AuthSessionProvider>
+            <CustomThemeProvider>
+              <Navbar />
+              <main
+                style={{
+                  maxWidth: 1200,
+                  margin: "0 auto",
+                  padding: "24px 16px",
+                  minHeight: "calc(100vh - 64px)",
+                }}
+              >
+                {children}
+              </main>
+            </CustomThemeProvider>
+          </AuthSessionProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
 }
+
