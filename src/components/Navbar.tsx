@@ -129,7 +129,7 @@ export default function Navbar() {
               <>
                 <IconButton
                   component={Link}
-                  href={`/profile/${session.user?.email}`}
+                  href={`/profile/${session.user?.id}`}
                   sx={{ mr: 1 }}
                 >
                   <Avatar
@@ -175,7 +175,7 @@ export default function Navbar() {
                 >
                   <MenuItem
                     component={Link}
-                    href={`/profile/${session.user?.email}`}
+                    href={`/profile/${session.user?.id}`}
                   >
                     <ListItemIcon>
                       <PersonIcon fontSize="small" />
