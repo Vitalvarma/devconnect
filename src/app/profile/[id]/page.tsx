@@ -63,7 +63,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     return notFound();
   }
 
-  const isFollowing = user.followers.some(
+  const isFollowing = user.following.some(
     (follow) => follow.followerId === session?.user?.id
   );
 
@@ -142,7 +142,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             <Grid size={{ xs: 6, sm: 3 }}>
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: "primary.main" }}>
-                  {user.followers.length}
+                  {user.following.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Followers
@@ -152,7 +152,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             <Grid size={{ xs: 6, sm: 3 }}>
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: "primary.main" }}>
-                  {user.following.length}
+                  {user.followers.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Following
