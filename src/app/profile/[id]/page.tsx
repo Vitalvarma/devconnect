@@ -81,8 +81,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         <Box
           sx={{
             height: 120,
-            background: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
             borderRadius: "12px 12px 0 0",
           }}
         />
@@ -114,14 +113,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             }}
           >
             {isOwnProfile ? (
-              <Button
-                component={Link}
-                href="/profile/edit"
-                variant="outlined"
-                color="primary"
-              >
-                Edit Profile
-              </Button>
+              <Link href="/profile/edit">
+                <Button variant="outlined" color="primary">
+                  Edit Profile
+                </Button>
+              </Link>
             ) : (
               <FollowButton userId={user.id} initialState={isFollowing} />
             )}

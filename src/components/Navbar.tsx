@@ -11,7 +11,6 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  useTheme,
   Container,
   Divider,
   ListItemIcon,
@@ -29,7 +28,6 @@ import { useState } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -77,7 +75,7 @@ export default function Navbar() {
                 width: 40,
                 height: 40,
                 borderRadius: 2,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -91,7 +89,7 @@ export default function Navbar() {
               variant="h6"
               sx={{
                 fontWeight: 700,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 display: { xs: "none", sm: "block" },

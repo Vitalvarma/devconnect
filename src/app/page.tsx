@@ -58,8 +58,7 @@ export default function Home() {
         sx={{
           py: { xs: 8, md: 12 },
           textAlign: "center",
-          background: (theme) =>
-            `linear-gradient(180deg, ${theme.palette.primary.light}15 0%, transparent 100%)`,
+          background: "linear-gradient(180deg, #60a5fa15 0%, transparent 100%)",
           borderRadius: 4,
           mb: 6,
         }}
@@ -72,8 +71,7 @@ export default function Home() {
               fontWeight: 800,
               mb: 2,
               fontSize: { xs: "2.5rem", md: "3.5rem" },
-              background: (theme) =>
-                `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
