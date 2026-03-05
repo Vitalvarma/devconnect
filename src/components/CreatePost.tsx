@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -14,10 +15,13 @@ import {
 import {
   Send as SendIcon,
   Create as CreateIcon,
+  Image as ImageIcon,
 } from "@mui/icons-material";
+import { CldUploadWidget } from "next-cloudinary";
 
 export default function CreatePost() {
   const [content, setContent] = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -39,7 +43,7 @@ export default function CreatePost() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, image }),
       });
 
       const data = await res.json();
@@ -47,6 +51,7 @@ export default function CreatePost() {
       if (res.ok) {
         setMessage(data.message || "Post created successfully!");
         setContent("");
+        setImage("");
       } else {
         setError(data.message || "Failed to create post");
       }
@@ -94,6 +99,51 @@ export default function CreatePost() {
             disabled={loading}
           />
 
+          <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
+            <CldUploadWidget
+              uploadPreset="devconnect_posts"
+              onSuccess={(result) => {
+                const info = result.info as { secure_url?: string } | undefined;
+                if (info?.secure_url) {
+                  setImage(info.secure_url);
+                }
+              }}
+            >
+               {({ open }: { open: () => void }) => {
+                return (
+                  <Button
+                    variant="outlined"
+                    startIcon={<ImageIcon />}
+                    onClick={() => open()}
+                    disabled={loading}
+                  >
+                    {image ? "Change Image" : "Add Image"}
+                  </Button>
+                );
+              }}
+            </CldUploadWidget>
+            
+            {image && (
+              <Box sx={{ position: "relative", width: 100, height: 100 }}>
+                <Image
+                  src={image}
+                  alt="Preview"
+                  width={100}
+                  height={100}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }}
+                />
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => setImage("")}
+                  sx={{ position: "absolute", top: -8, right: -8, minWidth: "auto", p: 0.5 }}
+                >
+                  ✕
+                </Button>
+              </Box>
+            )}
+          </Box>
+
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
@@ -121,4 +171,3 @@ export default function CreatePost() {
     </Card>
   );
 }
-

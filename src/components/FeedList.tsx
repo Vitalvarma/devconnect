@@ -3,6 +3,7 @@
 import Link from "next/link";
 import DeleteButton from "./deleteButton";
 import LikeButton from "./LIkeButton";
+import Image from "next/image";
 import {
   Box,
   Typography,
@@ -27,6 +28,7 @@ interface Like {
 interface Post {
   id: string;
   content: string;
+  image: string | null;
   createdAt: Date;
   authorId: string;
   author: Author;
@@ -99,10 +101,33 @@ export default function FeedList({ posts, userId }: FeedListProps) {
           <CardContent>
             <Typography
               variant="body1"
-              sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+              sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word", mb: 2 }}
             >
               {post.content}
             </Typography>
+            
+            {post.image && (
+              <Box
+                sx={{
+                  width: "100%",
+                  maxHeight: 400,
+                  overflow: "hidden",
+                  borderRadius: 2,
+                  mb: 2,
+                }}
+              >
+                <Image
+                  src={post.image}
+                  alt="Post image"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "cover",
+                    maxHeight: 400,
+                  }}
+                />
+              </Box>
+            )}
           </CardContent>
           <Divider />
           <Box sx={{ p: 1, display: "flex", justifyContent: "flex-end" }}>

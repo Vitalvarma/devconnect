@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { content } = body as { content: string };
+    const { content, image } = body as { content: string; image: string };
 
     if (!content || content.trim() === "") {
       return NextResponse.json(
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     const post = await prisma.post.create({
       data: {
         content,
+        image: image || null,
         authorId: user.id,
       },
     });
