@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { IconButton, Typography, Box } from "@mui/material";
 import {
   Favorite as FavoriteIcon,
@@ -16,6 +16,21 @@ export default function LikeButton({ postId, initialCount }: Props) {
   const [count, setCount] = useState(initialCount);
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const checkLiked = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/like/status?postId=${postId}`);
+      const data = await res.json();
+      setLiked(data.liked);
+    }
+    catch (error) {
+      console.error("Error checking like status:", error);
+    }
+  }, [postId]);
+
+  useEffect(() => {
+    checkLiked();
+  },[checkLiked]);
 
   const handleLike = async () => {
     if (loading) return;
