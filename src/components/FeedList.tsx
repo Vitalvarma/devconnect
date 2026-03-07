@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import DeleteButton from "./deleteButton";
-import LikeButton from "./LIkeButton";
+import LikeButton from "./LikeButton";
 import Image from "next/image";
+import CommentBox from "./CommentBox";
+import Comments from "./Comments";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -12,7 +15,9 @@ import {
   Avatar,
   CardContent,
   Divider,
+  IconButton,
 } from "@mui/material";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 
 interface Author {
@@ -41,6 +46,15 @@ interface FeedListProps {
 }
 
 export default function FeedList({ posts, userId }: FeedListProps) {
+  const [viewComments, setViewComments] = useState<{ [key: string]: boolean }>({});
+
+  const toggleComments = (postId: string) => {
+    setViewComments((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {posts.map((post) => (
@@ -132,6 +146,24 @@ export default function FeedList({ posts, userId }: FeedListProps) {
             )}
           </CardContent>
           <Divider />
+          <Box sx={{ p: 1, display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton onClick={() => toggleComments(post.id)} color="primary">
+              <ChatBubbleOutlineIcon />
+            </IconButton>
+            <Typography variant="body2" color="text.secondary">
+              {viewComments[post.id] ? "Hide comments" : "Show comments"}
+            </Typography>
+          </Box>
+          {viewComments[post.id] && (
+            <>
+              <Box sx={{ p: 2 }}>
+                <Comments postId={post.id} />
+              </Box>
+              <Box sx={{ p: 2 }}>
+                <CommentBox postId={post.id} />
+              </Box>
+            </>
+          )}
           <Box sx={{ p: 1, display: "flex", justifyContent: "flex-end" }}>
             <LikeButton postId={post.id} initialCount={post.likes.length} />
           </Box>
