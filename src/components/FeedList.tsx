@@ -119,6 +119,8 @@ export default function FeedList({ posts, userId }: FeedListProps) {
                 <Image
                   src={post.image}
                   alt="Post image"
+                  width={800}
+                  height={400}
                   style={{
                     width: "100%",
                     height: "auto",

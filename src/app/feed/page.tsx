@@ -52,7 +52,7 @@ export default async function FeedPage() {
           </Typography>
         </Box>
       ) : (
-        <FeedList posts={posts} userId={session.user.id} />
+        <FeedList posts={posts} userId={session.user.id}/>
       )}
     </Box>
   );
