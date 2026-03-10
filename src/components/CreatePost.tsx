@@ -97,6 +97,7 @@ export default function CreatePost() {
             variant="outlined"
             sx={{ mb: 2 }}
             disabled={loading}
+            id="create-post-textfield"
           />
 
           <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
