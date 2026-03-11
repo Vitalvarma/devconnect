@@ -14,10 +14,13 @@ import {
 import {
   Save as SaveIcon,
   Person as PersonIcon,
+  Image as ImageIcon,
 } from "@mui/icons-material";
 
 export default function EditProfile() {
+  const [name, setName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,7 +37,7 @@ export default function EditProfile() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ bio }),
+        body: JSON.stringify({ name, bio, image }),
       });
 
       const data = await res.json();
@@ -76,6 +79,17 @@ export default function EditProfile() {
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
+              label="Name"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              variant="outlined"
+              sx={{ mb: 2 }}
+              disabled={loading}
+            />
+
+            <TextField
+              fullWidth
               label="Bio"
               placeholder="Tell us about yourself..."
               value={bio}
@@ -85,6 +99,20 @@ export default function EditProfile() {
               variant="outlined"
               sx={{ mb: 2 }}
               disabled={loading}
+            />
+
+            <TextField
+              fullWidth
+              label="Profile Image URL"
+              placeholder="https://example.com/image.jpg"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              variant="outlined"
+              sx={{ mb: 2 }}
+              disabled={loading}
+              InputProps={{
+                startAdornment: <ImageIcon sx={{ mr: 1, color: "text.secondary" }} />,
+              }}
             />
 
             {error && (
