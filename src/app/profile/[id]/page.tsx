@@ -87,7 +87,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         />
 
         <CardContent sx={{ pt: 0, position: "relative" }}>
-          <Avatar
+<Avatar
             sx={{
               width: 120,
               height: 120,
@@ -100,6 +100,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               left: 24,
               boxShadow: 3,
             }}
+            src={user.image || undefined}
           >
             {user.name?.[0] || user.email[0].toUpperCase()}
           </Avatar>
