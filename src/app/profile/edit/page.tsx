@@ -15,19 +15,17 @@ import {
   Save as SaveIcon,
   Person as PersonIcon,
   Image as ImageIcon,
+  CloudUpload as CloudUploadIcon,
 } from "@mui/icons-material";
+import { CldUploadWidget } from "next-cloudinary";
 
 export default function EditProfile() {
-  const [name, setName] = useState<string>("");
-  const [bio, setBio] = useState<string>("");
-  const [image, setImage] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
-  const [currentImage, setCurrentImage] = useState<string>("");
-  const [initialImage, setInitialImage] = useState<string>("");
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [image, setImage] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -37,9 +35,6 @@ export default function EditProfile() {
         setName(data.name || '');
         setBio(data.bio || '');
         setImage(data.image || '');
-        setPreview(data.image || '');
-        setCurrentImage(data.image || '');
-        setInitialImage(data.image || '');
       }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
@@ -50,88 +45,43 @@ export default function EditProfile() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setPreview(previewUrl);
-    }
-  };
-
-  const uploadImage = async () => {
-    if (!file) return image;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (preview.startsWith('blob:')) {
-          URL.revokeObjectURL(preview);
-        }
-        setFile(null);
-        return data.url;
-      }
-    } catch (err) {
-      console.error('Upload failed:', err);
-    }
-    return image;
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
 
     try {
-      let finalImage = image;
-      if (file || preview !== initialImage) {
-        finalImage = await uploadImage();
-      }
-
       const res = await fetch("/api/profile/update", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, bio, image: finalImage }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, bio, image }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setMessage(data.message || "Profile updated successfully!");
+        setMessage(data.message || "Profile updated!");
+        fetchProfile();
       } else {
-        setError(data.message || "Failed to update profile");
+        setError(data.message || "Update failed");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError("Network error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto" }}>
+    <Box sx={{ maxWidth: 600, mx: "auto", p: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
         Edit Profile
       </Typography>
 
       <Card>
-        <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mb: 3,
-            }}
-          >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
             <PersonIcon color="primary" />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Profile Information
@@ -153,7 +103,7 @@ export default function EditProfile() {
             <TextField
               fullWidth
               label="Bio"
-              placeholder="Tell us about yourself..."
+              placeholder="Tell us about yourself"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               multiline
@@ -165,81 +115,63 @@ export default function EditProfile() {
 
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
-                Profile Image <ImageIcon sx={{ verticalAlign: "middle", ml: 0.5 }} />
+                Profile Image <ImageIcon sx={{ ml: 0.5 }} />
               </Typography>
-              {preview && (
-                <Box 
-                  sx={{ 
-                    mb: 2,
-                    width: 150,
-                    height: 150,
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    boxShadow: (theme) => theme.shadows[3],
-                    backgroundImage: `url(${preview})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }} 
-                />
+              {image && (
+                <Box sx={{ 
+                  mb: 2,
+                  width: 150,
+                  height: 150,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  boxShadow: 3,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundImage: `url(${image})`,
+                }} />
               )}
-              {currentImage && !preview && (
-                <Box 
-                  sx={{ 
-                    mb: 2,
-                    width: 150,
-                    height: 150,
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    boxShadow: (theme) => theme.shadows[3],
-                    backgroundImage: `url(${currentImage})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }} 
-                />
-              )}
-              <Typography variant="caption" sx={{ display: "block", mt: 0.5, color: "text.secondary" }}>
-                Current image
+              <Typography variant="caption" sx={{ display: "block", mt: 1, color: "text.secondary" }}>
+                {image ? "Current image" : "No image set"}
               </Typography>
-              <label 
-                htmlFor="profile-image-upload" 
-                style={{ 
-                  width: "100%", 
-                  padding: "12px", 
-                  border: "1px solid #d1d5db", 
-                  borderRadius: "8px",
-                  background: "white",
-                  display: "block",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  color: loading ? "#9ca3af" : "#374151",
-                  textAlign: "center"
+
+              <CldUploadWidget
+                uploadPreset="devconnect_profiles"
+                onSuccess={(result) => {
+                  const info = result.info as { secure_url?: string };
+                  if (info?.secure_url) {
+                    setImage(info.secure_url);
+                    // Auto save profile
+                    fetch("/api/profile/update", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ image: info.secure_url })
+                    }).then(res => {
+                      if (res.ok) setMessage("Profile image updated!");
+                    }).catch(() => setError("Failed to save"));
+                  }
                 }}
               >
-                {loading ? "Uploading..." : "Choose new profile image"}
-              </label>
-              <input
-                id="profile-image-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                disabled={loading}
-                style={{ display: "none" }}
-              />
-              <Typography variant="caption" sx={{ display: "block", mt: 0.5, color: "text.secondary" }}>
-                Supported: JPG, PNG, WebP (max 5MB)
+                {({ open }: { open: () => void }) => (
+                  <Button
+                    variant="outlined"
+                    startIcon={<CloudUploadIcon />}
+                    onClick={() => open()}
+                    disabled={loading}
+                    fullWidth
+                    sx={{ mt: 1 }}
+                  >
+                    Upload Profile Image
+                  </Button>
+                )}
+              </CldUploadWidget>
+
+              <Typography variant="caption" sx={{ display: "block", mt: 1, color: "text.secondary" }}>
+                Powered by Cloudinary
               </Typography>
             </Box>
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
-
-            {message && (
-              <Alert severity="success" sx={{ mb: 2 }}>
-                {message}
-              </Alert>
-            )}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
 
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button

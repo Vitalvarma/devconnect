@@ -1,11 +1,17 @@
-# Profile Image Upload Implementation TODO
+# Cloudinary Upload Widget Implementation
 
-## Steps (Plan Breakdown)
-- [x] Step 1: Create `/api/upload/route.ts` for Cloudinary image upload
-- [x] Step 2a: Create `/api/profile/me` for current user data
-- [x] Step 2b: Update `src/app/profile/edit/page.tsx` for file upload + preview + current data load
-- [x] Step 3: Update `src/app/profile/[id]/page.tsx` to display profile image in Avatar
-- [x] Step 4: Test upload and display (run `npm run dev`, go to /profile/edit)
-- [ ] Step 5: Verify DB update and profile view refresh
+**Status:** In Progress
 
-**Notes**: Assumes CLOUDINARY_* env vars set. next-cloudinary handles uploads.
+## Steps:
+- [x] Navbar TypeScript/runtime errors fixed
+- [x] Profile page shows fresh images (server fetch)
+- [ ] 1. Update TODO.md for widget plan
+- [ ] 2. src/app/profile/edit/page.tsx → Cloudinary Upload Widget
+- [ ] 3. Widget callback → auto POST /api/profile/update
+- [ ] 4. Test → widget upload → instant navbar/profile update
+- [ ] 5. Complete
+
+**Notes:**
+- User confirmed Cloudinary env vars exist ✅
+- Widget uses NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+

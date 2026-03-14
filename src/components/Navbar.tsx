@@ -24,12 +24,33 @@ import {
   Logout as LogoutIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [userProfile, setUserProfile] = useState<{id: string, name?: string, email?: string, image?: string} | null>(null);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (session?.user?.email) {
+        try {
+          const res = await fetch('/api/profile/me');
+          if (res.ok) {
+            const profile = await res.json();
+            setUserProfile(profile);
+          }
+        } catch (err) {
+          console.error('Failed to fetch profile:', err);
+        }
+      }
+    };
+
+    fetchProfile();
+    const interval = setInterval(fetchProfile, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
+  }, [session?.user?.email]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -129,19 +150,19 @@ export default function Navbar() {
               <>
                 <IconButton
                   component={Link}
-                  href={`/profile/${session.user?.id}`}
+                  href={`/profile/${session.user?.id || userProfile?.id}`}
                   sx={{ mr: 1 }}
                 >
                   <Avatar
-                    src={session.user?.image || undefined}
-                    alt={session.user?.name || "User"}
+                    src={userProfile?.image || session.user?.image || undefined}
+                    alt={userProfile?.name || session.user?.name || "User"}
                     sx={{
                       width: 36,
                       height: 36,
                       bgcolor: "primary.main",
                     }}
                   >
-                    {session.user?.name?.[0] || session.user?.email?.[0]?.toUpperCase()}
+                    {(userProfile?.name || session.user?.name)?.[0] || (userProfile?.email || session.user?.email)?.[0]?.toUpperCase()}
                   </Avatar>
                 </IconButton>
                 <Button
@@ -151,7 +172,7 @@ export default function Navbar() {
                   onClick={handleClick}
                   sx={{ display: { xs: "none", sm: "flex" } }}
                 >
-                  {session.user?.name || session.user?.email?.split("@")[0]}
+                  {userProfile?.name || session.user?.name || session.user?.email?.split("@")[0]}
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
